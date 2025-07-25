@@ -66,11 +66,10 @@ This game is a **single HTML file**. Setup is incredibly simple!
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/yourusername/your-repository-name.git
-   cd your-repository-name
+   git clone https://github.com/KING-UPE/MathWay.git
+   cd MathWay
    ```
 
-   *Replace `yourusername` and `your-repository-name` with your actual GitHub details.*
 
 2. **Open in Browser**:
 
