@@ -8,7 +8,7 @@
 
 Access the live application here:
 🔗 **Math Way - Play Now**
-*(Remember to replace the URL with your actual GitHub Pages link after deployment.)*
+*(https://king-upe.github.io/MathWay/)*
 
 ---
 
