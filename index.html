@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Way - Fun Learning!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================
+        CSS STYLES (Final Version)
+        ========================================
+        */
+
+        :root {
+            --bg-color: #fdf4f0;
+            --primary-color: #ff8c42;
+            --secondary-color: #ffc4a3;
+            --accent-color-1: #66c7f4;
+            --accent-color-2: #ff8c42;
+            --text-color: #5c4033;
+            --white: #ffffff;
+            --locked-color: #d1d1d1;
+            --unlocked-color: #84dcc6;
+            --completed-color: #a280d2;
+            --correct-color: #4caf50;
+            --wrong-color: #f44336;
+
+            --font-main: 'Nunito', sans-serif;
+            --font-display: 'Fredoka One', cursive;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        /* Custom Scrollbar Styling */
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+        body::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        body::-webkit-scrollbar-thumb {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            border: 2px solid var(--bg-color);
+        }
+
+        .page {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 100%; /* Use min-height to allow scrolling */
+            padding: 20px;
+            padding-top: 80px;
+            background-color: var(--bg-color);
+            z-index: 1;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transform: scale(1);
+            z-index: 10;
+        }
+        
+        #landing-page, #game-page {
+             padding-top: 20px;
+             min-height: 100vh; /* Ensure they take full screen height */
+             height: 100%;
+        }
+        #level-page, #operation-page {
+            justify-content: flex-start;
+        }
+
+        .back-btn-page {
+            position: fixed; /* Fixed position to stay in place on scroll */
+            top: 20px;
+            left: 20px;
+            background: var(--white);
+            color: var(--text-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .back-btn-page:hover {
+            transform: scale(1.1) rotate(-10deg);
+            background-color: var(--accent-color-2);
+            color: var(--white);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 
+                -2px -2px 0 var(--white),  
+                 2px -2px 0 var(--white),
+                -2px  2px 0 var(--white),
+                 2px  2px 0 var(--white),
+                 4px  4px 0px rgba(0,0,0,0.1);
+        }
+        .page-title span {
+            color: var(--accent-color-1);
+        }
+
+        #landing-page .landing-content {
+            text-align: center;
+        }
+        
+        .subtitle {
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .character {
+            margin: 30px 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .math-robot {
+            font-size: clamp(4rem, 15vw, 6rem);
+        }
+
+        .action-btn {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: clamp(1.2rem, 5vw, 1.5rem);
+            font-family: var(--font-display);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-bottom: 5px solid rgba(0,0,0,0.2);
+        }
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        }
+        .action-btn:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+
+        .operation-choices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 30px;
+        }
+
+        .operation-card {
+            background-color: var(--white);
+            border-radius: 25px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 4px solid transparent;
+        }
+        .operation-card:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-color);
+        }
+        .operation-icon {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+        .operation-card:hover .operation-icon {
+            transform: scale(1.2) rotate(-10deg);
+        }
+        .operation-card h3 {
+            color: var(--text-color);
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+        }
+
+        @media (min-width: 768px) {
+            .operation-choices {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .level-content {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #selected-operation-display {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            font-weight: 700;
+            text-align: center;
+            background: var(--white);
+            padding: 5px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #selected-operation-display span {
+            color: var(--primary-color);
+            font-weight: 900;
+        }
+
+        .level-map-wrapper {
+            width: 100%;
+            position: relative;
+        }
+        
+        .levels-container {
+            position: relative;
+            padding: 40px 0;
+            width: 100%;
+        }
+
+        #path-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        #path-svg path {
+            fill: none;
+            stroke: var(--accent-color-1);
+            stroke-width: 8;
+            stroke-dasharray: 20 15;
+            stroke-linecap: round;
+        }
+        
+        .level-node {
+            display: flex;
+            position: relative;
+            margin: 80px 0;
+            z-index: 2;
+        }
+        .level-node:nth-child(odd) {
+            justify-content: flex-start;
+            padding-left: 15%;
+        }
+        .level-node:nth-child(even) {
+            justify-content: flex-end;
+            padding-right: 15%;
+        }
+        
+        .level-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-family: var(--font-display);
+            color: var(--white);
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 5px solid var(--white);
+            position: relative;
+        }
+        .level-circle:hover {
+            transform: scale(1.15);
+        }
+        .level-circle.locked {
+            background-color: var(--locked-color);
+            cursor: not-allowed;
+            color: #888;
+        }
+        .level-circle.unlocked {
+            background-color: var(--unlocked-color);
+        }
+        .level-circle.current {
+            background-color: var(--primary-color);
+            transform: scale(1.2);
+            animation: pulse 1.5s infinite;
+        }
+        .level-circle.completed {
+            background-color: var(--completed-color);
+        }
+        .level-circle .stars-display {
+            position: absolute;
+            bottom: -25px;
+            font-size: 1.5rem;
+            line-height: 1;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            white-space: nowrap;
+        }
+        /* Final "Coming Soon" Node */
+        .level-circle.final {
+            background-color: #b2bec3;
+            font-size: 3rem;
+            cursor: default;
+        }
+        .level-circle.final:hover {
+            transform: scale(1);
+        }
+
+
+        #game-page {
+            background: linear-gradient(135deg, var(--accent-color-1), var(--accent-color-2));
+        }
+        
+        .game-area {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--white);
+            border-radius: 25px;
+            padding: clamp(15px, 4vw, 30px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .score-board {
+            display: flex;
+            gap: 10px;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            font-weight: bold;
+            color: var(--text-color);
+            flex-grow: 1;
+        }
+        .score-board > div {
+            background: #f0f8ff;
+            padding: 10px 15px;
+            border-radius: 15px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+            flex: 1;
+        }
+
+        .quit-btn {
+            background-color: var(--white);
+            color: var(--wrong-color);
+            border: 3px solid var(--wrong-color);
+            border-radius: 15px;
+            padding: 8px 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .quit-btn:hover {
+            background-color: var(--wrong-color);
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .problem-container {
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .problem {
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            font-family: var(--font-display);
+            color: var(--text-color);
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .option {
+            background-color: var(--accent-color-1);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            font-size: clamp(1.5rem, 6vw, 2rem);
+            font-family: var(--font-display);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border-bottom: 5px solid rgba(0,0,0,0.2);
+        }
+        .option:hover {
+            background-color: #5ab8e8;
+            transform: translateY(-2px);
+        }
+        .option:active {
+            transform: translateY(1px);
+            border-bottom-width: 2px;
+        }
+
+        .feedback { text-align: center; font-size: 1.5rem; margin-top: 20px; min-height: 40px; font-weight: 700; }
+        .correct { 
+            color: var(--correct-color); 
+            animation: feedback-pop 0.5s ease-out forwards;
+            position: relative;
+            z-index: 1; /* Ensure it's above other elements if needed */
+        }
+        .wrong { 
+            color: var(--wrong-color); 
+            animation: shake 0.5s ease-out forwards;
+            position: relative;
+            z-index: 1;
+        }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 100; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+        .modal.active { display: flex; opacity: 1; }
+        .modal-content { background-color: white; border-radius: 25px; padding: 30px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2); transform: scale(0.7); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal.active .modal-content { transform: scale(1); }
+        .modal h2 { font-family: var(--font-display); color: var(--primary-color); font-size: 2.5rem; margin-bottom: 20px; }
+        .stars { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .star { font-size: 3rem; animation: star-pulse 1s infinite alternate; }
+        .star:nth-child(2) { animation-delay: 0.2s; }
+        .star:nth-child(3) { animation-delay: 0.4s; }
+        .points-earned { color: var(--primary-color); font-weight: bold; font-size: 1.5rem; }
+        .modal-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
+        .modal-buttons button { padding: 12px 25px; border: none; border-radius: 15px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; flex-grow: 1; }
+        #next-level-btn, #retry-level-btn { background-color: var(--unlocked-color); color: white; }
+        #next-level-btn:hover, #retry-level-btn:hover { background-color: #6acbaa; transform: scale(1.05); }
+        #back-to-levels-btn, #back-to-levels-fail-btn { background-color: #a4b0be; color: white; }
+        #back-to-levels-btn:hover, #back-to-levels-fail-btn:hover { background-color: #8c9aa8; transform: scale(1.05); }
+        
+        .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; overflow: hidden; }
+        .confetti { position: absolute; width: 10px; height: 10px; background-color: var(--primary-color); opacity: 0; animation: fall 3s linear forwards; }
+        
+        /* Trophy Icon */
+        .trophy-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--white);
+            color: #daa520; /* Gold color */
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .trophy-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+            background-color: #f7dc6f; /* Lighter gold */
+            color: var(--white);
+        }
+
+        /* Ranking Modal */
+        #ranking-modal .modal-content {
+            max-width: 600px;
+        }
+        .rank-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .rank-item {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 10px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+        .rank-item:hover {
+            transform: translateX(5px);
+        }
+        .rank-emoji {
+            font-size: 2.5rem;
+            margin-right: 15px;
+            line-height: 1;
+        }
+        .rank-info {
+            flex-grow: 1;
+            text-align: left;
+        }
+        .rank-info h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        .rank-info p {
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+        .rank-progress {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            height: 10px;
+            width: 100px; /* Adjust as needed */
+            margin-left: 20px;
+            overflow: hidden;
+        }
+        .rank-progress-bar {
+            height: 100%;
+            background-color: var(--unlocked-color);
+            width: 0%; /* Will be set by JS */
+            border-radius: 10px;
+            transition: width 0.5s ease-out;
+        }
+        .rank-current {
+            border: 3px solid var(--primary-color);
+            background-color: var(--secondary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes pulse { 0% { transform: scale(1.2); box-shadow: 0 0 0 0 rgba(255, 140, 66, 0.7); } 70% { transform: scale(1.2); box-shadow: 0 0 0 20px rgba(255, 140, 66, 0); } 100% { transform: scale(1.2); box-shadow: 0 0 0 0 rgba(255, 140, 66, 0); } }
+        @keyframes shake { 0%, 100% {transform: translateX(0) scale(1);} 10%, 30%, 50%, 70%, 90% {transform: translateX(-10px) scale(1.05);} 20%, 40%, 60%, 80% {transform: translateX(10px) scale(1.05);} }
+        @keyframes star-pulse { from { transform: scale(1); } to { transform: scale(1.3); } }
+        @keyframes star-pop { 0% { transform: scale(0) rotate(-90deg); opacity: 0; } 50% { transform: scale(1.5) rotate(15deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+        @keyframes feedback-pop { 0% { transform: scale(0.8); opacity: 0.7; } 80% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fall { from { top: -20px; opacity: 1; } to { top: 100vh; opacity: 1; transform: rotate(720deg); } }
+
+        @media (max-width: 600px) {
+            .options { grid-template-columns: 1fr; }
+            .modal-buttons button { flex-basis: 100%; }
+            .back-btn-page, .trophy-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            .trophy-btn { font-size: 1.5rem; }
+            .rank-emoji { font-size: 2rem; }
+            .rank-info h3 { font-size: 1.3rem; }
+            .rank-info p { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="landing-page" class="page active">
+        <div class="landing-content">
+            <h1 class="page-title">Welcome to <span>Math Way!</span></h1>
+            <p class="subtitle">The fun way to master math skills</p>
+            <div class="character">
+                <div class="math-robot">🧠✨</div>
+            </div>
+            <button id="start-btn" class="action-btn">Start Learning!</button>
+        </div>
+    </div>
+
+    <div id="operation-page" class="page">
+        <button id="back-btn-1" class="back-btn-page">‹</button>
+        <button id="trophy-btn" class="trophy-btn">🏆</button>
+        <div class="operation-content">
+            <h1 class="page-title">Choose Your <span>Adventure!</span></h1>
+            <div class="operation-choices">
+                <div class="operation-card" data-operation="add">
+                    <div class="operation-icon">➕</div>
+                    <h3>Addition</h3>
+                </div>
+                <div class="operation-card" data-operation="subtract">
+                    <div class="operation-icon">➖</div>
+                    <h3>Subtraction</h3>
+                </div>
+                <div class="operation-card" data-operation="multiply">
+                    <div class="operation-icon">✖️</div>
+                    <h3>Multiplication</h3>
+                </div>
+                <div class="operation-card" data-operation="divide">
+                    <div class="operation-icon">➗</div>
+                    <h3>Division</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="level-page" class="page">
+        <button id="back-btn-2" class="back-btn-page">‹</button>
+        <div class="level-content">
+            <h1 class="page-title">Select a <span>Level</span></h1>
+            <p id="selected-operation-display">Operation: <span>Addition</span></p>
+            <div class="level-map-wrapper">
+                <svg id="path-svg" preserveAspectRatio="none" viewBox="0 0 100 1350">
+                    <path d="M 50,0 
+                             C 100,100 0,200 50,300
+                             S 100,400 50,500
+                             S 0,600 50,700
+                             S 100,800 50,900
+                             S 0,1000 50,1100
+                             S 100,1200 50,1300" />
+                </svg>
+                <div class="levels-container">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-page" class="page">
+        <div class="game-area">
+            <div class="game-header">
+                <button id="quit-game" class="quit-btn">Quit</button>
+                <div class="score-board">
+                    <div>LVL: <span id="level">1</span></div>
+                    <div>⭐: <span id="score">0</span></div>
+                    <div class="operation-display"><span id="current-operation">+</span></div>
+                </div>
+            </div>
+
+            <div class="problem-container">
+                <div id="problem" class="problem">5 + 3 = ?</div>
+            </div>
+
+            <div class="options">
+                <button class="option" id="option1">8</button>
+                <button class="option" id="option2">15</button>
+                <button class="option" id="option3">2</button>
+                <button class="option" id="option4">53</button>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+        </div>
+    </div>
+
+    <div id="level-complete-modal" class="modal">
+        <div class="modal-content">
+            <h2>Level Complete!</h2>
+            <div class="stars">
+                </div>
+            <p>You earned <span class="points-earned">100</span> points!</p>
+            <div class="modal-buttons">
+                <button id="next-level-btn">Next Level</button>
+                <button id="back-to-levels-btn">Level Map</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="level-failed-modal" class="modal">
+        <div class="modal-content">
+            <h2>Level Failed! 😩</h2>
+            <p>You made too many mistakes.</p>
+            <p>Better luck next time!</p>
+            <div class="modal-buttons">
+                <button id="retry-level-btn">Retry Level</button>
+                <button id="back-to-levels-fail-btn">Level Map</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ranking-modal" class="modal">
+        <div class="modal-content">
+            <h2>🏆 Your Ranks 🏆</h2>
+            <div class="rank-list">
+                </div>
+            <div class="modal-buttons">
+                <button id="close-ranking-modal" class="action-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="confetti-container" id="confetti-container"></div>
+
+    <script>
+    /* ========================================
+    JAVASCRIPT LOGIC (Final Version)
+    ========================================
+    */
+    document.addEventListener('DOMContentLoaded', function() {
+        let score = 0;
+        let currentLevel = 1;
+        let correctAnswer;
+        let operation = 'add';
+        let operationName = 'Addition';
+        let wrongAnswerCount = 0;
+        let currentStars = 0;
+
+        let maxUnlockedLevel = {
+            add: 1,
+            subtract: 1,
+            multiply: 1,
+            divide: 1
+        };
+        // levelsCompleted now stores an object with 'passed' status and 'stars' count
+        let levelsCompleted = {}; // Stores: {'add-1': {passed: true, stars: 3}, 'subtract-2': {passed: false}}
+        let totalPoints = 0; // Total points across all operations
+
+        const pages = {
+            landing: document.getElementById('landing-page'),
+            operation: document.getElementById('operation-page'),
+            level: document.getElementById('level-page'),
+            game: document.getElementById('game-page')
+        };
+        
+        const startBtn = document.getElementById('start-btn');
+        const operationCards = document.querySelectorAll('.operation-card');
+        const backBtn1 = document.getElementById('back-btn-1');
+        const backBtn2 = document.getElementById('back-btn-2');
+        const selectedOperationDisplay = document.querySelector('#selected-operation-display span');
+        const levelsContainer = document.querySelector('.levels-container');
+        const quitGameBtn = document.getElementById('quit-game');
+        const problemElement = document.getElementById('problem');
+        const optionElements = [
+            document.getElementById('option1'),
+            document.getElementById('option2'),
+            document.getElementById('option3'),
+            document.getElementById('option4')
+        ];
+        const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
+        const currentOperationDisplay = document.getElementById('current-operation');
+        const feedbackElement = document.getElementById('feedback');
+        const confettiContainer = document.getElementById('confetti-container');
+
+        // Modals
+        const levelCompleteModal = document.getElementById('level-complete-modal');
+        const levelFailedModal = document.getElementById('level-failed-modal');
+        const rankingModal = document.getElementById('ranking-modal');
+
+        // Modal buttons
+        const nextLevelBtn = document.getElementById('next-level-btn');
+        const backToLevelsBtn = document.getElementById('back-to-levels-btn');
+        const retryLevelBtn = document.getElementById('retry-level-btn');
+        const backToLevelsFailBtn = document.getElementById('back-to-levels-fail-btn');
+        const closeRankingModalBtn = document.getElementById('close-ranking-modal');
+
+        const pointsEarnedDisplay = document.querySelector('.points-earned');
+        const levelCompleteStarsDisplay = levelCompleteModal.querySelector('.stars');
+
+        // Ranking elements
+        const trophyBtn = document.getElementById('trophy-btn');
+        const rankList = document.querySelector('.rank-list');
+
+        const rankTiers = [
+            { name: 'Newbie', points: 0, emoji: '👶' },
+            { name: 'Beginner', points: 100, emoji: '🌱' },
+            { name: 'Novice', points: 300, emoji: '📘' },
+            { name: 'Adept', points: 600, emoji: '✨' },
+            { name: 'Skilled', points: 1000, emoji: '💪' },
+            { name: 'Expert', points: 1500, emoji: '🧠' },
+            { name: 'Master', points: 2500, emoji: '🌟' },
+            { name: 'Grandmaster', points: 4000, emoji: '👑' }
+        ];
+        
+        initializeGame();
+        
+        startBtn.addEventListener('click', () => showPage('operation'));
+        operationCards.forEach(card => {
+            card.addEventListener('click', function() {
+                operation = this.getAttribute('data-operation');
+                operationName = this.querySelector('h3').textContent;
+                selectedOperationDisplay.textContent = operationName;
+                updateOperationDisplay();
+                // Set currentLevel to the highest unlocked for this operation
+                currentLevel = maxUnlockedLevel[operation]; 
+                showPage('level');
+            });
+        });
+        
+        backBtn1.addEventListener('click', () => showPage('landing'));
+        backBtn2.addEventListener('click', () => showPage('operation'));
+        quitGameBtn.addEventListener('click', () => showPage('level'));
+        
+        optionElements.forEach(option => {
+            option.addEventListener('click', function() {
+                // Prevent multiple clicks before feedback clears
+                if (feedbackElement.classList.contains('correct') || feedbackElement.classList.contains('wrong')) return;
+                checkAnswer(parseInt(this.textContent));
+            });
+        });
+        
+        nextLevelBtn.addEventListener('click', () => {
+            levelCompleteModal.classList.remove('active');
+            currentLevel++;
+            // Check if this new level exceeds the max unlocked for this operation
+            if (currentLevel > maxUnlockedLevel[operation]) {
+                maxUnlockedLevel[operation] = currentLevel;
+            }
+            saveProgress();
+            // Only proceed if current level is within the defined totalLevels (10)
+            if (currentLevel <= 10) { 
+                showPage('game');
+            } else {
+                showPage('level'); // Go back to level map if max levels reached
+            }
+        });
+        
+        backToLevelsBtn.addEventListener('click', () => {
+            levelCompleteModal.classList.remove('active');
+            showPage('level');
+        });
+
+        retryLevelBtn.addEventListener('click', () => {
+            levelFailedModal.classList.remove('active');
+            startGame(); // Retry the current level
+        });
+
+        backToLevelsFailBtn.addEventListener('click', () => {
+            levelFailedModal.classList.remove('active');
+            showPage('level');
+        });
+
+        trophyBtn.addEventListener('click', () => {
+            generateRankingDisplay();
+            rankingModal.classList.add('active');
+        });
+
+        closeRankingModalBtn.addEventListener('click', () => {
+            rankingModal.classList.remove('active');
+        });
+        
+        function initializeGame() {
+            const savedProgress = localStorage.getItem('mathWayProgress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                // Ensure maxUnlockedLevel is an object with default values
+                maxUnlockedLevel = progress.maxUnlockedLevel || { add: 1, subtract: 1, multiply: 1, divide: 1 };
+                levelsCompleted = progress.levelsCompleted || {};
+                totalPoints = progress.totalPoints || 0;
+            }
+            // Ensure all operations have at least level 1 unlocked
+            for (const op in maxUnlockedLevel) {
+                if (maxUnlockedLevel[op] === undefined) {
+                    maxUnlockedLevel[op] = 1;
+                }
+            }
+            // Set initial currentLevel based on default operation (add) or stored value if returning
+            currentLevel = maxUnlockedLevel['add']; 
+        }
+        
+        function showPage(pageName) {
+            Object.values(pages).forEach(page => page.classList.remove('active'));
+            // Close all modals when switching pages
+            levelCompleteModal.classList.remove('active');
+            levelFailedModal.classList.remove('active');
+            rankingModal.classList.remove('active');
+
+            setTimeout(() => {
+                pages[pageName].classList.add('active');
+            }, 50);
+            
+            // Show/hide trophy button based on page
+            if (pageName === 'operation') {
+                trophyBtn.style.display = 'flex';
+            } else {
+                trophyBtn.style.display = 'none';
+            }
+
+            if (pageName === 'level') {
+                generateLevelMap();
+            } else if (pageName === 'game') {
+                startGame();
+            }
+        }
+        
+        function updateOperationDisplay() {
+            let symbol;
+            switch(operation) {
+                case 'add': symbol = '+'; break;
+                case 'subtract': symbol = '−'; break;
+                case 'multiply': symbol = '×'; break;
+                case 'divide': symbol = '÷'; break;
+                default: symbol = '?';
+            }
+            currentOperationDisplay.textContent = symbol;
+        }
+        
+        function generateLevelMap() {
+            levelsContainer.innerHTML = '';
+            const totalLevels = 10; // Max playable levels
+
+            // Ensure the path SVG is scaled correctly for 10 levels + 1 final node
+            const pathSvg = document.getElementById('path-svg');
+            // Path needs one extra segment for the "final" node visually, even if it's not a real level
+            pathSvg.setAttribute('viewBox', `0 0 100 ${(totalLevels + 1) * 150}`); 
+
+            // Regenerate the SVG path dynamically based on totalLevels
+            let pathD = "M 50,0 ";
+            for (let i = 0; i < totalLevels; i++) { // Loop only for playable levels
+                const y = i * 150;
+                const nextY = (i + 1) * 150;
+                if (i % 2 === 0) { // Odd levels - curve right
+                    pathD += `C 100,${y + 50} 0,${y + 100} 50,${nextY} `;
+                } else { // Even levels - curve left
+                    pathD += `S 100,${y + 100} 50,${nextY} `;
+                }
+            }
+            // Add a final straight line for the last node to appear correctly
+            pathD += `L 50,${(totalLevels + 1) * 150}`;
+            pathSvg.querySelector('path').setAttribute('d', pathD);
+
+            
+            for (let i = 1; i <= totalLevels + 1; i++) {
+                const levelNode = document.createElement('div');
+                levelNode.className = 'level-node';
+
+                const levelCircle = document.createElement('div');
+                levelCircle.className = 'level-circle';
+                
+                // Handle the final "Coming Soon" node
+                if (i > totalLevels) {
+                    levelCircle.classList.add('final');
+                    levelCircle.textContent = '?';
+                } else {
+                    levelCircle.textContent = i;
+                    const levelKey = `${operation}-${i}`;
+                    const levelStatus = levelsCompleted[levelKey];
+
+                    if (levelStatus && levelStatus.passed) {
+                        levelCircle.classList.add('completed');
+                        // Display stars
+                        const starsDisplay = document.createElement('div');
+                        starsDisplay.classList.add('stars-display');
+                        starsDisplay.textContent = '⭐'.repeat(levelStatus.stars);
+                        levelCircle.appendChild(starsDisplay);
+                    } else if (i <= maxUnlockedLevel[operation]) {
+                        levelCircle.classList.add('unlocked');
+                        if (i === currentLevel) { // This is the current level the player is on/retrying
+                             levelCircle.classList.add('current');
+                        }
+                        
+                        levelCircle.addEventListener('click', function() {
+                            currentLevel = i; // Set current level to clicked level
+                            showPage('game');
+                        });
+                    } else {
+                        levelCircle.classList.add('locked');
+                    }
+                }
+                
+                levelNode.appendChild(levelCircle);
+                levelsContainer.appendChild(levelNode);
+            }
+        }
+        
+        function startGame() {
+            score = 0;
+            wrongAnswerCount = 0; // Reset wrong answers for new game
+            scoreElement.textContent = score;
+            levelElement.textContent = currentLevel;
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback'; // Reset classes
+            generateProblem();
+        }
+        
+        function generateProblem() {
+            // Clear feedback after a short delay to allow animation
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+
+            let num1, num2;
+            // Increased difficulty scaling:
+            // Level 1: maxNumber up to 10
+            // Level 5: maxNumber up to 30
+            // Level 10: maxNumber up to 55
+            const maxNumber = 5 + (currentLevel * 5); 
+            const minNumber = currentLevel > 1 ? Math.floor(maxNumber / 4) + 1 : 1; // Start numbers higher for higher levels
+
+            if (operation === 'divide') {
+                // Ensure num1 is a multiple of num2 for division
+                num2 = Math.floor(Math.random() * (maxNumber / 3)) + 2; // min num2 is 2
+                const multiplier = Math.floor(Math.random() * (maxNumber / num2)) + 1;
+                num1 = num2 * multiplier;
+                if (num1 === 0) num1 = num2; // Avoid 0/x
+            } else if (operation === 'subtract') {
+                 num1 = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+                 num2 = Math.floor(Math.random() * (num1 - minNumber + 1)) + minNumber;
+            } else {
+                num1 = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+                num2 = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+            }
+            
+            switch(operation) {
+                case 'add': correctAnswer = num1 + num2; problemElement.textContent = `${num1} + ${num2} = ?`; break;
+                case 'subtract': correctAnswer = num1 - num2; problemElement.textContent = `${num1} − ${num2} = ?`; break;
+                case 'multiply': correctAnswer = num1 * num2; problemElement.textContent = `${num1} × ${num2} = ?`; break;
+                case 'divide': correctAnswer = num1 / num2; problemElement.textContent = `${num1} ÷ ${num2} = ?`; break;
+            }
+            
+            const options = generateOptions(correctAnswer);
+            optionElements.forEach((option, index) => {
+                option.textContent = options[index];
+            });
+        }
+        
+        function generateOptions(correct) {
+            const options = new Set([correct]);
+            while (options.size < 4) {
+                let wrongAnswer;
+                const variationRange = Math.max(5, Math.floor(correct / 5)); // More varied wrong answers for larger numbers
+                const plusOrMinus = Math.random() > 0.5 ? 1 : -1;
+                
+                if (Math.random() > 0.3) { // 70% chance to be close to correct
+                    wrongAnswer = correct + (Math.floor(Math.random() * variationRange) + 1) * plusOrMinus;
+                } else { // 30% chance to be a more random number
+                    wrongAnswer = Math.floor(Math.random() * (correct + 20)) + 1;
+                }
+                
+                // Ensure options are positive and distinct from correct answer
+                if (wrongAnswer >= 0 && wrongAnswer !== correct) { 
+                    options.add(wrongAnswer);
+                }
+            }
+            return Array.from(options).sort(() => Math.random() - 0.5);
+        }
+        
+        function checkAnswer(selectedAnswer) {
+            if (selectedAnswer === correctAnswer) {
+                score += (currentLevel * 10); // Earn more points for higher levels
+                scoreElement.textContent = score;
+                feedbackElement.textContent = 'Awesome! 🎉';
+                feedbackElement.className = 'feedback correct';
+                
+                // Score threshold for completion:
+                // Level 1: 50 points
+                // Level 5: 150 points
+                // Level 10: 300 points
+                const pointsToPass = 50 + (currentLevel - 1) * 25; 
+
+                if (score >= pointsToPass) {
+                    setTimeout(completeLevel, 500);
+                } else {
+                    setTimeout(generateProblem, 1000);
+                }
+            } else {
+                wrongAnswerCount++;
+                if (wrongAnswerCount >= 3) {
+                    feedbackElement.textContent = `Too many mistakes! The answer was ${correctAnswer}.`;
+                    feedbackElement.className = 'feedback wrong';
+                    setTimeout(failLevel, 1500); // Fail after showing feedback
+                } else {
+                    feedbackElement.textContent = `Not quite! The answer was ${correctAnswer}.`;
+                    feedbackElement.className = 'feedback wrong';
+                    setTimeout(generateProblem, 1500);
+                }
+            }
+        }
+        
+        function completeLevel() {
+            const levelKey = `${operation}-${currentLevel}`;
+            let prevLevelStatus = levelsCompleted[levelKey];
+            let prevStars = prevLevelStatus ? prevLevelStatus.stars : 0;
+
+            // Determine stars based on wrong answers for THIS attempt
+            if (wrongAnswerCount === 0) currentStars = 3;
+            else if (wrongAnswerCount === 1) currentStars = 2;
+            else if (wrongAnswerCount === 2) currentStars = 1;
+            else currentStars = 0; // Should not happen if failLevel is called at 3
+
+            // Apply score multiplier for THIS attempt
+            let scoreMultiplier = 1;
+            if (currentStars === 3) scoreMultiplier = 2;
+            else if (currentStars === 2) scoreMultiplier = 1.5;
+            // If 1 star, multiplier is 1 (no change)
+
+            const earnedPointsForLevel = score * scoreMultiplier;
+            totalPoints += earnedPointsForLevel; // Always add points from this successful attempt
+
+            // Update stored stars only if current attempt yields more stars
+            if (currentStars > prevStars) {
+                levelsCompleted[levelKey] = { passed: true, stars: currentStars };
+            } else {
+                // If current attempt stars are less or equal, keep the previous highest stars
+                levelsCompleted[levelKey] = { passed: true, stars: prevStars };
+            }
+
+            // Only unlock the next level for THIS operation if it's the current max unlocked AND not the final level
+            if (currentLevel === maxUnlockedLevel[operation] && currentLevel < 10) { 
+                maxUnlockedLevel[operation]++;
+            }
+            saveProgress();
+            pointsEarnedDisplay.textContent = earnedPointsForLevel.toFixed(0); // Display points as integer
+
+            // Update stars in modal (show stars from current attempt, but save best)
+            levelCompleteStarsDisplay.innerHTML = '⭐'.repeat(currentStars);
+
+            levelCompleteModal.classList.add('active');
+            createConfetti();
+        }
+
+        function failLevel() {
+            levelFailedModal.classList.add('active');
+            // Do not save progress for a failed level
+        }
+        
+        function saveProgress() {
+            const progress = { maxUnlockedLevel, levelsCompleted, totalPoints };
+            localStorage.setItem('mathWayProgress', JSON.stringify(progress));
+        }
+        
+        function createConfetti() {
+            confettiContainer.innerHTML = '';
+            const colors = ['#ff8c42', '#66c7f4', '#ffafcc', '#84dcc6', '#fcf4a3'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                if (Math.random() > 0.5) {
+                    confetti.style.borderRadius = '50%';
+                    confetti.style.width = '8px';
+                    confetti.style.height = '8px';
+                }
+                confettiContainer.appendChild(confetti);
+            }
+            setTimeout(() => { confettiContainer.innerHTML = ''; }, 5000);
+        }
+
+        function generateRankingDisplay() {
+            rankList.innerHTML = '';
+            let currentRankIndex = 0;
+            for (let i = 0; i < rankTiers.length; i++) {
+                if (totalPoints >= rankTiers[i].points) {
+                    currentRankIndex = i;
+                } else {
+                    break; 
+                }
+            }
+
+            rankTiers.forEach((rank, index) => {
+                const rankItem = document.createElement('div');
+                rankItem.classList.add('rank-item');
+                if (index === currentRankIndex) {
+                    rankItem.classList.add('rank-current');
+                }
+
+                let progressBarWidth = 0;
+                let pointsToNextRank = 0;
+
+                if (index === currentRankIndex) {
+                    // Calculate progress for the current rank towards the next
+                    if (index < rankTiers.length - 1) {
+                        const nextRankPoints = rankTiers[index + 1].points;
+                        const currentRankMinPoints = rankTiers[index].points;
+                        const pointsInCurrentTier = totalPoints - currentRankMinPoints;
+                        const tierRange = nextRankPoints - currentRankMinPoints;
+                        
+                        if (tierRange > 0) {
+                            progressBarWidth = (pointsInCurrentTier / tierRange) * 100;
+                        } else {
+                            progressBarWidth = 100; // If tierRange is 0 (e.g., first rank)
+                        }
+                        pointsToNextRank = nextRankPoints - totalPoints;
+                        if (pointsToNextRank < 0) pointsToNextRank = 0; // Don't show negative points
+                    } else {
+                        // Max rank (Grandmaster) - always full bar
+                        progressBarWidth = 100;
+                    }
+                } else if (index < currentRankIndex) {
+                    // Ranks already achieved - show full bar
+                    progressBarWidth = 100;
+                } else {
+                    // Future ranks - show empty bar
+                    progressBarWidth = 0;
+                }
+                
+                progressBarWidth = Math.min(100, Math.max(0, progressBarWidth)); // Clamp between 0 and 100
+
+                rankItem.innerHTML = `
+                    <div class="rank-emoji">${rank.emoji}</div>
+                    <div class="rank-info">
+                        <h3>${rank.name}</h3>
+                        <p>${rank.points} Points ${index === currentRankIndex && index < rankTiers.length - 1 ? `(${pointsToNextRank.toFixed(0)} to next)` : ''}</p>
+                    </div>
+                    <div class="rank-progress">
+                        <div class="rank-progress-bar" style="width: ${progressBarWidth}%;"></div>
+                    </div>
+                `;
+                rankList.appendChild(rankItem);
+            });
+        }
+    });
+    </script>
+</body>
+</html>
