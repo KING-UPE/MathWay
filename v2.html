@@ -314,7 +314,6 @@
             transition: width 0.5s ease-in-out;
         }
         
-        /* --- Health Bar Color Change --- */
         #player-health-bar {
             background-color: var(--health-color);
         }
@@ -323,16 +322,12 @@
             background-color: var(--damage-color);
         }
 
-
         .character-sprite {
             width: 150px;
             height: 150px;
             object-fit: contain;
             transition: transform 0.2s ease;
         }
-        /* .fighter.player .character-sprite { transform: scaleX(-1); }
-        .fighter.enemy .character-sprite { transform: scaleX(1); } */
-
 
         .character-sprite.hit {
             animation: take-hit 0.5s ease-out;
@@ -485,6 +480,80 @@
 
         .character-info h3 { font-family: var(--font-display); font-size: 1.5rem; color: var(--text-color); margin: 10px 0 5px; }
         .character-info p { font-size: 0.9rem; color: #ccc; }
+
+        /* --- Multiplayer CSS --- */
+        .multiplayer-setup-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+        .multiplayer-operation-card, .time-option {
+            background-color: var(--secondary-color);
+            border: 3px solid var(--accent-color-1);
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        .multiplayer-operation-card:hover, .time-option:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-color);
+        }
+        .multiplayer-operation-card.selected, .time-option.selected {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        .time-choices {
+            display: flex;
+            gap: 15px;
+        }
+        #start-multiplayer-btn:disabled {
+            background-color: var(--locked-color);
+            cursor: not-allowed;
+        }
+        .multiplayer-game-area {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .multiplayer-progress-bar-container {
+            width: 100%;
+            display: flex;
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            overflow: hidden;
+            height: 40px;
+            border: 3px solid var(--secondary-color);
+        }
+        .multiplayer-progress-bar {
+            height: 100%;
+            background-color: var(--correct-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: width 0.5s ease;
+        }
+        #p1-progress {
+             background-color: var(--unlocked-color);
+        }
+        #p2-progress {
+            background-color: var(--primary-color);
+        }
+        .multiplayer-problem-display {
+            width: 100%;
+            text-align: center;
+        }
         
         @keyframes take-hit { 0% { transform: translateX(0) scaleX(var(--scale, 1)); } 10%, 90% { transform: translateX(-10px) scaleX(var(--scale, 1)); } 20%, 80% { transform: translateX(10px) scaleX(var(--scale, 1)); } 30%, 50%, 70% { transform: translateX(-10px) scaleX(var(--scale, 1)); } 40%, 60% { transform: translateX(10px) scaleX(var(--scale, 1)); } 100% { transform: translateX(0) scaleX(var(--scale, 1)); } }
         @keyframes pulse { 0% { transform: scale(1.2); box-shadow: 0 0 0 0 rgba(233, 69, 96, 0.7); } 70% { transform: scale(1.2); box-shadow: 0 0 0 20px rgba(233, 69, 96, 0); } 100% { transform: scale(1.2); box-shadow: 0 0 0 0 rgba(233, 69, 96, 0); } }
@@ -506,6 +575,7 @@
 <body>
     <audio id="bg-music" src="v2Assets/background.mp3" loop preload="auto"></audio>
 
+    <!-- Single Player Pages -->
     <div id="landing-page" class="page active">
         <div class="landing-content">
             <h1 class="page-title">Math <span>Way</span></h1>
@@ -524,6 +594,7 @@
                 <div class="operation-card" data-operation="subtract"><div class="operation-icon">➖</div><h3>Subtraction</h3></div>
                 <div class="operation-card" data-operation="multiply"><div class="operation-icon">✖️</div><h3>Multiplication</h3></div>
                 <div class="operation-card" data-operation="divide"><div class="operation-icon">➗</div><h3>Division</h3></div>
+                <div id="multiplayer-btn" class="operation-card" style="grid-column: 1 / -1;"><div class="operation-icon">👥</div><h3>Multiplayer</h3></div>
             </div>
         </div>
     </div>
@@ -581,6 +652,50 @@
         </div>
     </div>
 
+    <!-- Multiplayer Pages -->
+    <div id="multiplayer-setup-page" class="page">
+        <button id="back-to-operations-btn" class="back-btn-page">‹</button>
+        <h1 class="page-title">Multiplayer <span>Setup</span></h1>
+        <div class="multiplayer-setup-content">
+            <h2>Choose Operation</h2>
+            <div class="operation-choices">
+                <div class="multiplayer-operation-card" data-operation="add">➕ Addition</div>
+                <div class="multiplayer-operation-card" data-operation="subtract">➖ Subtraction</div>
+                <div class="multiplayer-operation-card" data-operation="multiply">✖️ Multiplication</div>
+                <div class="multiplayer-operation-card" data-operation="divide">➗ Division</div>
+            </div>
+            <h2>Choose Time Limit</h2>
+            <div class="time-choices">
+                <div class="time-option" data-time="30">30s</div>
+                <div class="time-option" data-time="60">60s</div>
+                <div class="time-option" data-time="90">90s</div>
+                <div class="time-option" data-time="120">120s</div>
+            </div>
+            <button id="start-multiplayer-btn" class="action-btn" disabled>Start Battle</button>
+        </div>
+    </div>
+
+    <div id="multiplayer-game-page" class="page">
+        <div class="multiplayer-game-area">
+            <div class="multiplayer-progress-bar-container">
+                <div id="p1-progress" class="multiplayer-progress-bar">P1: 0</div>
+                <div id="p2-progress" class="multiplayer-progress-bar">P2: 0</div>
+            </div>
+            <div id="multiplayer-timer" class="timer-display">60</div>
+            <div class="multiplayer-problem-display">
+                <div id="multiplayer-problem" class="problem">5 + 3 = ?</div>
+                <div class="options">
+                    <button class="option" id="multiplayer-option1">8</button>
+                    <button class="option" id="multiplayer-option2">15</button>
+                    <button class="option" id="multiplayer-option3">2</button>
+                    <button class="option" id="multiplayer-option4">53</button>
+                </div>
+            </div>
+            <button id="quit-multiplayer-btn" class="action-btn" style="background-color: var(--wrong-color);">Quit</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
     <div id="level-complete-modal" class="modal">
         <div class="modal-content">
             <h2>K.O!</h2>
@@ -614,6 +729,30 @@
         </div>
     </div>
 
+    <div id="controls-modal" class="modal">
+        <div class="modal-content">
+            <h2>Player Controls</h2>
+            <p style="font-size: 1.2rem; margin: 10px 0;"><b>Player 1:</b> Use keys 1, 2, 3, 4 (top row)</p>
+            <p style="font-size: 1.2rem; margin: 10px 0;"><b>Player 2:</b> Use Numpad 1, 2, 3, 4</p>
+            <div class="modal-buttons">
+                <button id="got-it-btn" class="action-btn">Got It!</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="multiplayer-winner-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="winner-text">Player 1 Wins!</h2>
+            <p style="font-size: 1.2rem; margin-top: 15px;"><b>Final Score</b></p>
+            <p>Player 1: <span id="p1-final-score">0</span></p>
+            <p>Player 2: <span id="p2-final-score">0</span></p>
+            <div class="modal-buttons">
+                <button id="multiplayer-rematch-btn" class="action-btn">Rematch</button>
+                <button id="multiplayer-new-game-btn" class="action-btn" style="background-color: var(--locked-color);">New Game</button>
+            </div>
+        </div>
+    </div>
+
     <div class="confetti-container" id="confetti-container"></div>
 
     <script>
@@ -633,7 +772,7 @@
         let timerInterval;
         const TIME_PER_QUESTION = 15;
 
-        let isMuted = false; // Changed to false by default
+        let isMuted = false;
         let currentPlayerId = 'ryu';
 
         let maxUnlockedLevel = { add: 1, subtract: 1, multiply: 1, divide: 1 };
@@ -661,10 +800,12 @@
             landing: document.getElementById('landing-page'),
             operation: document.getElementById('operation-page'),
             level: document.getElementById('level-page'),
-            game: document.getElementById('game-page')
+            game: document.getElementById('game-page'),
+            multiplayerSetup: document.getElementById('multiplayer-setup-page'),
+            multiplayerGame: document.getElementById('multiplayer-game-page')
         };
         const bgMusic = document.getElementById('bg-music');
-        bgMusic.volume = 0.5; // Set default volume
+        bgMusic.volume = 0.5;
         
         // Buttons
         const startBtn = document.getElementById('start-btn');
@@ -708,10 +849,43 @@
         const characterList = document.querySelector('.character-list');
         const confettiContainer = document.getElementById('confetti-container');
 
+        // --- MULTIPLAYER VARIABLES ---
+        let multiplayerOperation = '';
+        let multiplayerTimeLimit = 0;
+        let p1Score = 0;
+        let p2Score = 0;
+        let multiplayerTimerInterval;
+        let multiplayerCorrectAnswer;
+
+        // --- MULTIPLAYER ELEMENT REFERENCES ---
+        const multiplayerBtn = document.getElementById('multiplayer-btn');
+        const backToOperationsBtn = document.getElementById('back-to-operations-btn');
+        const multiplayerOperationCards = document.querySelectorAll('.multiplayer-operation-card');
+        const timeOptions = document.querySelectorAll('.time-option');
+        const startMultiplayerBtn = document.getElementById('start-multiplayer-btn');
+        const p1ProgressBar = document.getElementById('p1-progress');
+        const p2ProgressBar = document.getElementById('p2-progress');
+        const multiplayerTimerDisplay = document.getElementById('multiplayer-timer');
+        const multiplayerProblem = document.getElementById('multiplayer-problem');
+        const multiplayerOptions = [
+            document.getElementById('multiplayer-option1'),
+            document.getElementById('multiplayer-option2'),
+            document.getElementById('multiplayer-option3'),
+            document.getElementById('multiplayer-option4')
+        ];
+        const quitMultiplayerBtn = document.getElementById('quit-multiplayer-btn');
+        const controlsModal = document.getElementById('controls-modal');
+        const gotItBtn = document.getElementById('got-it-btn');
+        const winnerModal = document.getElementById('multiplayer-winner-modal');
+        const winnerText = document.getElementById('winner-text');
+        const p1FinalScore = document.getElementById('p1-final-score');
+        const p2FinalScore = document.getElementById('p2-final-score');
+        const multiplayerRematchBtn = document.getElementById('multiplayer-rematch-btn');
+        const multiplayerNewGameBtn = document.getElementById('multiplayer-new-game-btn');
+
         // --- INITIALIZATION & EVENT LISTENERS ---
         initializeGame();
         
-        // Add audio context resume on first interaction
         document.addEventListener('click', function firstInteraction() {
             resumeAudioContext();
             document.removeEventListener('click', firstInteraction);
@@ -720,6 +894,7 @@
         startBtn.addEventListener('click', () => showPage('operation'));
         operationCards.forEach(card => {
             card.addEventListener('click', function() {
+                if(this.id === 'multiplayer-btn') return;
                 operation = this.getAttribute('data-operation');
                 operationName = this.querySelector('h3').textContent;
                 selectedOperationDisplay.textContent = operationName;
@@ -745,7 +920,6 @@
 
         muteBtn.addEventListener('click', toggleMute);
         
-        // Modal button listeners
         nextLevelBtn.addEventListener('click', () => {
             levelCompleteModal.classList.remove('active');
             currentLevel++;
@@ -784,6 +958,56 @@
             characterModal.classList.remove('active');
         });
 
+        // --- MULTIPLAYER EVENT LISTENERS ---
+        multiplayerBtn.addEventListener('click', () => showPage('multiplayerSetup'));
+
+        backToOperationsBtn.addEventListener('click', () => showPage('operation'));
+
+        multiplayerOperationCards.forEach(card => {
+            card.addEventListener('click', () => {
+                multiplayerOperationCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                multiplayerOperation = card.dataset.operation;
+                checkMultiplayerSetup();
+            });
+        });
+
+        timeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                timeOptions.forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                multiplayerTimeLimit = parseInt(option.dataset.time);
+                checkMultiplayerSetup();
+            });
+        });
+
+        startMultiplayerBtn.addEventListener('click', () => {
+            if(startMultiplayerBtn.disabled) return;
+            showPage(null);
+            controlsModal.classList.add('active');
+        });
+
+        gotItBtn.addEventListener('click', () => {
+            controlsModal.classList.remove('active');
+            showPage('multiplayerGame');
+        });
+
+        quitMultiplayerBtn.addEventListener('click', () => {
+            clearInterval(multiplayerTimerInterval);
+            document.removeEventListener('keydown', handleMultiplayerKeyPress);
+            showPage('multiplayerSetup');
+        });
+
+        multiplayerRematchBtn.addEventListener('click', () => {
+            winnerModal.classList.remove('active');
+            startMultiplayerGame();
+        });
+
+        multiplayerNewGameBtn.addEventListener('click', () => {
+            winnerModal.classList.remove('active');
+            showPage('multiplayerSetup');
+        });
+
         // --- CORE FUNCTIONS ---
         
         function initializeGame() {
@@ -807,14 +1031,17 @@
             Object.values(pages).forEach(page => page.classList.remove('active'));
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
 
-            setTimeout(() => {
-                pages[pageName].classList.add('active');
-            }, 50);
+            if(pageName){
+                setTimeout(() => {
+                    pages[pageName].classList.add('active');
+                }, 50);
+            }
             
             characterBtn.style.display = (pageName === 'operation') ? 'flex' : 'none';
 
             if (pageName === 'level') generateLevelMap();
             else if (pageName === 'game') startGame();
+            else if (pageName === 'multiplayerGame') startMultiplayerGame();
         }
         
         function startGame() {
@@ -951,8 +1178,125 @@
             levelFailedModal.classList.add('active');
         }
 
-        // --- HELPER & UI FUNCTIONS ---
+        // --- MULTIPLAYER FUNCTIONS ---
+        function checkMultiplayerSetup() {
+            startMultiplayerBtn.disabled = !(multiplayerOperation && multiplayerTimeLimit > 0);
+        }
 
+        function startMultiplayerGame() {
+            p1Score = 0;
+            p2Score = 0;
+            updateMultiplayerProgress();
+            generateMultiplayerProblem();
+            let timeLeft = multiplayerTimeLimit;
+            multiplayerTimerDisplay.textContent = timeLeft;
+
+            clearInterval(multiplayerTimerInterval);
+            multiplayerTimerInterval = setInterval(() => {
+                timeLeft--;
+                multiplayerTimerDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(multiplayerTimerInterval);
+                    endMultiplayerGame();
+                }
+            }, 1000);
+
+            document.addEventListener('keydown', handleMultiplayerKeyPress);
+        }
+
+        function generateMultiplayerProblem() {
+            let num1, num2;
+            const maxNumber = 20;
+            const minNumber = 1;
+
+            if (multiplayerOperation === 'divide') {
+                num2 = Math.floor(Math.random() * (maxNumber / 2)) + 2;
+                const multiplier = Math.floor(Math.random() * (maxNumber / num2)) + 1;
+                num1 = num2 * multiplier;
+            } else if (multiplayerOperation === 'subtract') {
+                num1 = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+                num2 = Math.floor(Math.random() * (num1 - minNumber + 1)) + minNumber;
+            } else {
+                num1 = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+                num2 = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+            }
+
+            let symbol;
+            switch(multiplayerOperation) {
+                case 'add': multiplayerCorrectAnswer = num1 + num2; symbol = '+'; break;
+                case 'subtract': multiplayerCorrectAnswer = num1 - num2; symbol = '−'; break;
+                case 'multiply': multiplayerCorrectAnswer = num1 * num2; symbol = '×'; break;
+                case 'divide': multiplayerCorrectAnswer = num1 / num2; symbol = '÷'; break;
+            }
+            multiplayerProblem.textContent = `${num1} ${symbol} ${num2} = ?`;
+
+            const options = generateOptions(multiplayerCorrectAnswer);
+            multiplayerOptions.forEach((option, index) => {
+                option.textContent = options[index];
+            });
+        }
+
+        function handleMultiplayerKeyPress(e) {
+            if (!pages.multiplayerGame.classList.contains('active')) return;
+            
+            const key = e.key;
+            const numpadMap = { 'Numpad1': '1', 'Numpad2': '2', 'Numpad3': '3', 'Numpad4': '4' };
+
+            const isP1 = ['1', '2', '3', '4'].includes(key);
+            const isP2 = Object.keys(numpadMap).includes(e.code);
+
+            if (isP1 || isP2) {
+                const optionIndex = parseInt(isP2 ? numpadMap[e.code] : key) - 1;
+                if (optionIndex >= 0 && optionIndex < multiplayerOptions.length) {
+                    const selectedAnswer = parseInt(multiplayerOptions[optionIndex].textContent);
+
+                    if (selectedAnswer === multiplayerCorrectAnswer) {
+                        if (isP1) p1Score++;
+                        if (isP2) p2Score++;
+                    } else {
+                        // Deduct 1 point for wrong answer, but not below 0
+                        if (isP1) p1Score = Math.max(0, p1Score - 1);
+                        if (isP2) p2Score = Math.max(0, p2Score - 1);
+                    }
+                    updateMultiplayerProgress();
+                    generateMultiplayerProblem();
+                }
+            }
+        }
+
+
+        function updateMultiplayerProgress() {
+            const totalScore = p1Score + p2Score;
+            let p1Width = 50;
+            if (totalScore > 0) {
+                p1Width = (p1Score / totalScore) * 100;
+            }
+            const p2Width = 100 - p1Width;
+
+            p1ProgressBar.style.width = `${p1Width}%`;
+            p1ProgressBar.textContent = `P1: ${p1Score}`;
+            p2ProgressBar.style.width = `${p2Width}%`;
+            p2ProgressBar.textContent = `P2: ${p2Score}`;
+        }
+
+        function endMultiplayerGame() {
+            document.removeEventListener('keydown', handleMultiplayerKeyPress);
+
+            if (p1Score > p2Score) {
+                winnerText.textContent = "Player 1 Wins!";
+            } else if (p2Score > p1Score) {
+                winnerText.textContent = "Player 2 Wins!";
+            } else {
+                winnerText.textContent = "It's a Draw!";
+            }
+
+            p1FinalScore.textContent = p1Score;
+            p2FinalScore.textContent = p2Score;
+
+            winnerModal.classList.add('active');
+        }
+
+        // --- HELPER & UI FUNCTIONS ---
         function updateHealthBars() {
             const playerHealthPercent = (playerHealth / PLAYER_MAX_HEALTH) * 100;
             const enemyHealthPercent = (enemyHealth / (ENEMY_BASE_HEALTH + currentLevel)) * 100;
@@ -963,6 +1307,7 @@
         function startTimer() {
             timer = TIME_PER_QUESTION;
             timerDisplay.textContent = timer;
+            clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timer--;
                 timerDisplay.textContent = timer;
@@ -989,27 +1334,22 @@
         }
 
         function toggleMute() {
-            // First ensure we have audio context
             if (bgMusic.paused && !isMuted) {
                 bgMusic.play().catch(e => console.log("Audio play failed:", e));
             }
             
-            // Toggle the mute state
             isMuted = !isMuted;
             bgMusic.muted = isMuted;
             
-            // Update button text
             muteBtn.textContent = isMuted ? "Unmute 🔇" : "Mute 🔊";
             
-            // If unmuting, ensure volume is at a reasonable level
             if (!isMuted && bgMusic.volume === 0) {
                 bgMusic.volume = 0.5;
             }
         }
 
         function toggleMusic(play) {
-            if (play) {
-                if (isMuted) return; // Don't play if muted
+            if (play && !isMuted) {
                 bgMusic.play().catch(e => console.log("Audio play failed:", e));
             } else {
                 bgMusic.pause();
@@ -1019,8 +1359,8 @@
         function resumeAudioContext() {
             if (bgMusic.paused && !isMuted) {
                 bgMusic.play().then(() => {
-                    bgMusic.pause(); // Immediately pause if we just wanted to resume context
-                    bgMusic.currentTime = 0; // Reset to start
+                    bgMusic.pause();
+                    bgMusic.currentTime = 0;
                 }).catch(e => console.log("Audio context resume failed:", e));
             }
         }
@@ -1055,7 +1395,7 @@
                 if (char.id === currentPlayerId) charItem.classList.add('current');
                 
                 charItem.innerHTML = `
-                    <img src="${char.img}" alt="${char.name}" class="character-avatar">
+                    <img src="${char.img}" alt="${char.name}" class="character-avatar" onerror="this.src='https://placehold.co/80x80/cccccc/000000?text=Error'">
                     <div class="character-info">
                         <h3>${char.name}</h3>
                         <p>${isUnlocked ? 'Unlocked' : `Needs ${char.stars} ⭐`}</p>
