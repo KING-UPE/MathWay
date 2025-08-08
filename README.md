@@ -53,8 +53,3 @@
 3. 📶 Progress Through Levels  
 4. 🏅 Earn Rewards (Stars or Character Unlocks)  
 5. 📊 Track Your Progress  
-
-## 🔄 Version-Specific Guides
-
-- [📚 Educational Edition Documentation](/v1/README.md)  
-- [🥊 Battle Edition Documentation](/v2/README.md)  
