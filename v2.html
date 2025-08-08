@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Way - The Ultimate Brain Battle!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --primary-color: #e94560;
+            --secondary-color: #16213e;
+            --accent-color-1: #0f3460;
+            --accent-color-2: #f9a826;
+            --text-color: #ffffff;
+            --white: #ffffff;
+            --locked-color: #576ca8;
+            --unlocked-color: #84dcc6;
+            --completed-color: #a280d2;
+            --correct-color: #4caf50;
+            --wrong-color: #f44336;
+            --health-color: #32ff7e;
+            --damage-color: #ff4d4d;
+
+            --font-main: 'Nunito', sans-serif;
+            --font-display: 'Bangers', cursive;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+        body::-webkit-scrollbar-track {
+            background: var(--secondary-color);
+        }
+        body::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .page {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 100%;
+            padding: 20px;
+            padding-top: 80px;
+            background-color: var(--bg-color);
+            z-index: 1;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transform: scale(1);
+            z-index: 10;
+        }
+        
+        #landing-page, #game-page {
+             padding-top: 20px;
+             min-height: 100vh;
+             height: 100%;
+        }
+        #level-page, #operation-page {
+            justify-content: flex-start;
+        }
+
+        .back-btn-page {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--white);
+            color: var(--secondary-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .back-btn-page:hover {
+            transform: scale(1.1) rotate(-10deg);
+            background-color: var(--accent-color-2);
+            color: var(--white);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 10vw, 5rem);
+            color: var(--accent-color-2);
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 3px;
+            text-shadow: 
+                -3px -3px 0 var(--secondary-color),  
+                 3px -3px 0 var(--secondary-color),
+                -3px  3px 0 var(--secondary-color),
+                 3px  3px 0 var(--secondary-color),
+                 6px  6px 0px rgba(0,0,0,0.2);
+        }
+        .page-title span {
+            color: var(--primary-color);
+        }
+
+        #landing-page .landing-content {
+            text-align: center;
+        }
+        
+        .subtitle {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .action-btn {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: clamp(1.2rem, 5vw, 1.8rem);
+            font-family: var(--font-display);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-bottom: 5px solid rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+        }
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.4);
+        }
+        .action-btn:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+
+        .operation-choices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 30px;
+        }
+
+        .operation-card {
+            background-color: var(--secondary-color);
+            border-radius: 25px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            border: 4px solid var(--accent-color-1);
+        }
+        .operation-card:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary-color);
+        }
+        .operation-icon {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+        .operation-card:hover .operation-icon {
+            transform: scale(1.2) rotate(-10deg);
+        }
+        .operation-card h3 {
+            color: var(--text-color);
+            font-family: var(--font-display);
+            font-size: 2rem;
+            letter-spacing: 1px;
+        }
+
+        @media (min-width: 768px) {
+            .operation-choices {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .level-content {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #selected-operation-display {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            font-weight: 700;
+            text-align: center;
+            background: var(--secondary-color);
+            padding: 5px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #selected-operation-display span {
+            color: var(--primary-color);
+            font-weight: 900;
+        }
+
+        .level-map-wrapper { width: 100%; position: relative; }
+        .levels-container { position: relative; padding: 40px 0; width: 100%; }
+        #path-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        #path-svg path { fill: none; stroke: var(--accent-color-1); stroke-width: 8; stroke-dasharray: 20 15; stroke-linecap: round; }
+        
+        .level-node { display: flex; position: relative; margin: 80px 0; z-index: 2; }
+        .level-node:nth-child(odd) { justify-content: flex-start; padding-left: 15%; }
+        .level-node:nth-child(even) { justify-content: flex-end; padding-right: 15%; }
+        
+        .level-circle {
+            width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; font-family: var(--font-display); color: var(--white); cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); transition: all 0.3s ease;
+            border: 5px solid var(--white); position: relative;
+        }
+        .level-circle:hover { transform: scale(1.15); }
+        .level-circle.locked { background-color: var(--locked-color); cursor: not-allowed; color: #ccc; }
+        .level-circle.unlocked { background-color: var(--unlocked-color); }
+        .level-circle.current { background-color: var(--primary-color); transform: scale(1.2); animation: pulse 1.5s infinite; }
+        .level-circle.completed { background-color: var(--completed-color); }
+        .level-circle .stars-display { position: absolute; bottom: -25px; font-size: 1.5rem; line-height: 1; text-shadow: 0 1px 3px rgba(0,0,0,0.3); white-space: nowrap; }
+        .level-circle.final { background-color: #b2bec3; font-size: 3rem; cursor: default; }
+        .level-circle.final:hover { transform: scale(1); }
+
+        /* --- Game Page --- */
+        #game-page {
+            background: url('https://www.transparenttextures.com/patterns/dark-matter.png'), linear-gradient(135deg, var(--accent-color-1), var(--secondary-color));
+            justify-content: flex-start;
+        }
+        
+        .game-area {
+            width: 100%;
+            max-width: 900px;
+            background-color: transparent;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .fight-scene {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 20px;
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .fighter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40%;
+        }
+        .fighter.player { align-items: flex-start; }
+        .fighter.enemy { align-items: flex-end; }
+
+        .health-bar-container {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 5px;
+            border: 3px solid #000;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .health-bar {
+            height: 30px;
+            border-radius: 10px;
+            width: 100%;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        /* --- Health Bar Color Change --- */
+        #player-health-bar {
+            background-color: var(--health-color);
+        }
+
+        #enemy-health-bar {
+            background-color: var(--damage-color);
+        }
+
+
+        .character-sprite {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            transition: transform 0.2s ease;
+        }
+        /* .fighter.player .character-sprite { transform: scaleX(-1); }
+        .fighter.enemy .character-sprite { transform: scaleX(1); } */
+
+
+        .character-sprite.hit {
+            animation: take-hit 0.5s ease-out;
+        }
+
+        .game-controls {
+            background: var(--secondary-color);
+            border-radius: 25px 25px 0 0;
+            padding: clamp(15px, 4vw, 30px);
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
+            border-top: 5px solid var(--primary-color);
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .timer-display {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: var(--accent-color-2);
+            background: var(--bg-color);
+            padding: 5px 20px;
+            border-radius: 15px;
+            border: 3px solid var(--accent-color-2);
+        }
+
+        .game-buttons { display: flex; gap: 10px; }
+        .game-btn {
+            background-color: var(--white);
+            color: var(--secondary-color);
+            border: 3px solid var(--secondary-color);
+            border-radius: 15px;
+            padding: 8px 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .game-btn:hover { transform: scale(1.1); }
+        #quit-game { border-color: var(--wrong-color); color: var(--wrong-color); }
+        #quit-game:hover { background-color: var(--wrong-color); color: var(--white); }
+        #mute-btn { border-color: var(--accent-color-2); color: var(--accent-color-2); }
+        #mute-btn:hover { background-color: var(--accent-color-2); color: var(--white); }
+
+        .problem-container { text-align: center; margin-bottom: 20px; }
+        .problem {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-family: var(--font-display);
+            color: var(--text-color);
+            letter-spacing: 2px;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .option {
+            background-color: var(--accent-color-1);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            font-family: var(--font-display);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border-bottom: 5px solid rgba(0,0,0,0.4);
+            letter-spacing: 1px;
+        }
+        .option:hover { background-color: #1a4a8a; transform: translateY(-2px); }
+        .option:active { transform: translateY(1px); border-bottom-width: 2px; }
+        .option.disabled { pointer-events: none; opacity: 0.6; }
+
+        .feedback { text-align: center; font-size: 1.8rem; margin-top: 15px; min-height: 40px; font-weight: 700; font-family: var(--font-display); letter-spacing: 1px; }
+        .correct { color: var(--correct-color); animation: feedback-pop 0.5s ease-out forwards; }
+        .wrong { color: var(--wrong-color); animation: shake 0.5s ease-out forwards; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 100; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+        .modal.active { display: flex; opacity: 1; }
+        .modal-content { background-color: var(--secondary-color); border: 5px solid var(--primary-color); border-radius: 25px; padding: 30px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4); transform: scale(0.7); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal.active .modal-content { transform: scale(1); }
+        .modal h2 { font-family: var(--font-display); color: var(--accent-color-2); font-size: 3rem; margin-bottom: 20px; letter-spacing: 2px; }
+        .stars { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .star { font-size: 3rem; animation: star-pulse 1s infinite alternate; }
+        .star:nth-child(2) { animation-delay: 0.2s; }
+        .star:nth-child(3) { animation-delay: 0.4s; }
+        .modal-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
+        .modal-buttons button { flex-grow: 1; }
+        
+        .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; overflow: hidden; }
+        .confetti { position: absolute; width: 10px; height: 10px; background-color: var(--primary-color); opacity: 0; animation: fall 3s linear forwards; }
+        
+        .character-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--white);
+            color: var(--primary-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .character-btn:hover { transform: scale(1.1) rotate(10deg); background-color: var(--accent-color-2); color: var(--white); }
+
+        #character-modal .modal-content { max-width: 700px; }
+        .character-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .character-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--accent-color-1);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+        .character-item:hover { transform: translateY(-5px); border-color: var(--accent-color-2); }
+        .character-item.locked { filter: grayscale(1) brightness(0.5); cursor: not-allowed; }
+        .character-item.current { border-color: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
+        
+        .character-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            background-color: var(--secondary-color);
+        }
+
+        .character-info h3 { font-family: var(--font-display); font-size: 1.5rem; color: var(--text-color); margin: 10px 0 5px; }
+        .character-info p { font-size: 0.9rem; color: #ccc; }
+        
+        @keyframes take-hit { 0% { transform: translateX(0) scaleX(var(--scale, 1)); } 10%, 90% { transform: translateX(-10px) scaleX(var(--scale, 1)); } 20%, 80% { transform: translateX(10px) scaleX(var(--scale, 1)); } 30%, 50%, 70% { transform: translateX(-10px) scaleX(var(--scale, 1)); } 40%, 60% { transform: translateX(10px) scaleX(var(--scale, 1)); } 100% { transform: translateX(0) scaleX(var(--scale, 1)); } }
+        @keyframes pulse { 0% { transform: scale(1.2); box-shadow: 0 0 0 0 rgba(233, 69, 96, 0.7); } 70% { transform: scale(1.2); box-shadow: 0 0 0 20px rgba(233, 69, 96, 0); } 100% { transform: scale(1.2); box-shadow: 0 0 0 0 rgba(233, 69, 96, 0); } }
+        @keyframes shake { 0%, 100% {transform: translateX(0) scale(1);} 10%, 30%, 50%, 70%, 90% {transform: translateX(-10px) scale(1.05);} 20%, 40%, 60%, 80% {transform: translateX(10px) scale(1.05);} }
+        @keyframes star-pulse { from { transform: scale(1); } to { transform: scale(1.3); } }
+        @keyframes feedback-pop { 0% { transform: scale(0.8); opacity: 0.7; } 80% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fall { from { top: -20px; opacity: 1; } to { top: 100vh; opacity: 1; transform: rotate(720deg); } }
+
+        @media (max-width: 600px) {
+            .options { grid-template-columns: 1fr; }
+            .modal-buttons button { flex-basis: 100%; }
+            .back-btn-page, .character-btn { width: 45px; height: 45px; font-size: 1.3rem; }
+            .character-btn { font-size: 1.5rem; }
+            .character-avatar { width: 60px; height: 60px; }
+            .character-info h3 { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <audio id="bg-music" src="background.mp3" loop preload="auto"></audio>
+
+    <div id="landing-page" class="page active">
+        <div class="landing-content">
+            <h1 class="page-title">Math <span>Way</span></h1>
+            <p class="subtitle">The Ultimate Brain Battle!</p>
+            <button id="start-btn" class="action-btn">Start Fighting!</button>
+        </div>
+    </div>
+
+    <div id="operation-page" class="page">
+        <button id="back-btn-1" class="back-btn-page">‹</button>
+        <button id="character-btn" class="character-btn">👤</button>
+        <div class="operation-content">
+            <h1 class="page-title">Choose Your <span>Training!</span></h1>
+            <div class="operation-choices">
+                <div class="operation-card" data-operation="add"><div class="operation-icon">➕</div><h3>Addition</h3></div>
+                <div class="operation-card" data-operation="subtract"><div class="operation-icon">➖</div><h3>Subtraction</h3></div>
+                <div class="operation-card" data-operation="multiply"><div class="operation-icon">✖️</div><h3>Multiplication</h3></div>
+                <div class="operation-card" data-operation="divide"><div class="operation-icon">➗</div><h3>Division</h3></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="level-page" class="page">
+        <button id="back-btn-2" class="back-btn-page">‹</button>
+        <div class="level-content">
+            <h1 class="page-title">Select an <span>Opponent</span></h1>
+            <p id="selected-operation-display">Training: <span>Addition</span></p>
+            <div class="level-map-wrapper">
+                <svg id="path-svg" preserveAspectRatio="none" viewBox="0 0 100 1350">
+                    <path d="M 50,0 C 100,100 0,200 50,300 S 100,400 50,500 S 0,600 50,700 S 100,800 50,900 S 0,1000 50,1100 S 100,1200 50,1300" />
+                </svg>
+                <div class="levels-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-page" class="page">
+        <div class="game-area">
+            <div class="fight-scene">
+                <div class="fighter player">
+                    <div class="health-bar-container">
+                        <div id="player-health-bar" class="health-bar"></div>
+                    </div>
+                    <img id="player-sprite" class="character-sprite" src="ryn.png" alt="Player Fighter">
+                </div>
+                <div class="fighter enemy">
+                    <div class="health-bar-container">
+                        <div id="enemy-health-bar" class="health-bar"></div>
+                    </div>
+                    <img id="enemy-sprite" class="character-sprite" src="enamy1.png" alt="Enemy Fighter">
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <div class="game-header">
+                    <div id="timer-display" class="timer-display">15</div>
+                    <div class="game-buttons">
+                        <button id="mute-btn" class="game-btn">Mute 🔊</button>
+                        <button id="quit-game" class="game-btn">Quit</button>
+                    </div>
+                </div>
+                <div class="problem-container">
+                    <div id="problem" class="problem">5 + 3 = ?</div>
+                </div>
+                <div class="options">
+                    <button class="option" id="option1">8</button>
+                    <button class="option" id="option2">15</button>
+                    <button class="option" id="option3">2</button>
+                    <button class="option" id="option4">53</button>
+                </div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="level-complete-modal" class="modal">
+        <div class="modal-content">
+            <h2>K.O!</h2>
+            <div class="stars"></div>
+            <p>You earned <span class="points-earned">100</span> stars!</p>
+            <div class="modal-buttons">
+                <button id="next-level-btn" class="action-btn">Next Opponent</button>
+                <button id="back-to-levels-btn" class="action-btn" style="background-color: var(--locked-color);">Level Select</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="level-failed-modal" class="modal">
+        <div class="modal-content">
+            <h2>You Lose!</h2>
+            <p>You were defeated. Train harder!</p>
+            <div class="modal-buttons">
+                <button id="retry-level-btn" class="action-btn">Rematch!</button>
+                <button id="back-to-levels-fail-btn" class="action-btn" style="background-color: var(--locked-color);">Level Select</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="character-modal" class="modal">
+        <div class="modal-content">
+            <h2>Select Your Fighter!</h2>
+            <div class="character-list"></div>
+            <div class="modal-buttons">
+                <button id="close-character-modal" class="action-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="confetti-container" id="confetti-container"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- STATE VARIABLES ---
+        let currentLevel = 1;
+        let correctAnswer;
+        let operation = 'add';
+        let operationName = 'Addition';
+        let totalStars = 0;
+
+        let playerHealth, enemyHealth;
+        const PLAYER_MAX_HEALTH = 3;
+        const ENEMY_BASE_HEALTH = 5;
+
+        let timer;
+        let timerInterval;
+        const TIME_PER_QUESTION = 15;
+
+        let isMuted = false; // Changed to false by default
+        let currentPlayerId = 'ryu';
+
+        let maxUnlockedLevel = { add: 1, subtract: 1, multiply: 1, divide: 1 };
+        let levelsCompleted = {};
+
+        // --- CHARACTER DATA (NOW WITH LOCAL IMAGE PATHS) ---
+        const characterTiers = [
+            { id: 'ryu', name: 'Ryu', stars: 0, img: 'ryn.png' },
+            { id: 'chunli', name: 'Chun-Li', stars: 10, img: 'chun-li.png' },
+            { id: 'ken', name: 'Ken', stars: 25, img: 'ken.png' },
+            { id: 'guile', name: 'Guile', stars: 50, img: 'guile.png' },
+            { id: 'blanka', name: 'Blanka', stars: 80, img: 'blanka.png' },
+            { id: 'zangief', name: 'Zangief', stars: 120, img: 'zangief.png' },
+            { id: 'dhalsim', name: 'Dhalsim', stars: 170, img: 'dhalsim.png' },
+            { id: 'akuma', name: 'Akuma', stars: 250, img: 'akuma.png' }
+        ];
+        const enemyOutfits = [
+            'enamy1.png',
+            'enamy2.png',
+            'enamy3.png'
+        ];
+
+        // --- PAGE & ELEMENT REFERENCES ---
+        const pages = {
+            landing: document.getElementById('landing-page'),
+            operation: document.getElementById('operation-page'),
+            level: document.getElementById('level-page'),
+            game: document.getElementById('game-page')
+        };
+        const bgMusic = document.getElementById('bg-music');
+        bgMusic.volume = 0.5; // Set default volume
+        
+        // Buttons
+        const startBtn = document.getElementById('start-btn');
+        const operationCards = document.querySelectorAll('.operation-card');
+        const backBtn1 = document.getElementById('back-btn-1');
+        const backBtn2 = document.getElementById('back-btn-2');
+        const quitGameBtn = document.getElementById('quit-game');
+        const muteBtn = document.getElementById('mute-btn');
+        
+        // Game Page Elements
+        const playerHealthBar = document.getElementById('player-health-bar');
+        const enemyHealthBar = document.getElementById('enemy-health-bar');
+        const playerSprite = document.getElementById('player-sprite');
+        const enemySprite = document.getElementById('enemy-sprite');
+        const timerDisplay = document.getElementById('timer-display');
+        const problemElement = document.getElementById('problem');
+        const optionElements = [
+            document.getElementById('option1'), document.getElementById('option2'),
+            document.getElementById('option3'), document.getElementById('option4')
+        ];
+        const feedbackElement = document.getElementById('feedback');
+        
+        // Modals
+        const levelCompleteModal = document.getElementById('level-complete-modal');
+        const levelFailedModal = document.getElementById('level-failed-modal');
+        const characterModal = document.getElementById('character-modal');
+        
+        // Modal Buttons
+        const nextLevelBtn = document.getElementById('next-level-btn');
+        const backToLevelsBtn = document.getElementById('back-to-levels-btn');
+        const retryLevelBtn = document.getElementById('retry-level-btn');
+        const backToLevelsFailBtn = document.getElementById('back-to-levels-fail-btn');
+        const closeCharacterModalBtn = document.getElementById('close-character-modal');
+        
+        // Other displays
+        const selectedOperationDisplay = document.querySelector('#selected-operation-display span');
+        const levelsContainer = document.querySelector('.levels-container');
+        const pointsEarnedDisplay = document.querySelector('.points-earned');
+        const levelCompleteStarsDisplay = levelCompleteModal.querySelector('.stars');
+        const characterBtn = document.getElementById('character-btn');
+        const characterList = document.querySelector('.character-list');
+        const confettiContainer = document.getElementById('confetti-container');
+
+        // --- INITIALIZATION & EVENT LISTENERS ---
+        initializeGame();
+        
+        // Add audio context resume on first interaction
+        document.addEventListener('click', function firstInteraction() {
+            resumeAudioContext();
+            document.removeEventListener('click', firstInteraction);
+        }, { once: true });
+
+        startBtn.addEventListener('click', () => showPage('operation'));
+        operationCards.forEach(card => {
+            card.addEventListener('click', function() {
+                operation = this.getAttribute('data-operation');
+                operationName = this.querySelector('h3').textContent;
+                selectedOperationDisplay.textContent = operationName;
+                currentLevel = maxUnlockedLevel[operation]; 
+                showPage('level');
+            });
+        });
+        
+        backBtn1.addEventListener('click', () => showPage('landing'));
+        backBtn2.addEventListener('click', () => showPage('operation'));
+        quitGameBtn.addEventListener('click', () => {
+            stopTimer();
+            toggleMusic(false);
+            showPage('level');
+        });
+        
+        optionElements.forEach(option => {
+            option.addEventListener('click', function() {
+                stopTimer();
+                checkAnswer(parseInt(this.textContent));
+            });
+        });
+
+        muteBtn.addEventListener('click', toggleMute);
+        
+        // Modal button listeners
+        nextLevelBtn.addEventListener('click', () => {
+            levelCompleteModal.classList.remove('active');
+            currentLevel++;
+            if (currentLevel > maxUnlockedLevel[operation]) {
+                maxUnlockedLevel[operation] = currentLevel;
+            }
+            saveProgress();
+            if (currentLevel <= 10) { 
+                showPage('game');
+            } else {
+                showPage('level');
+            }
+        });
+        
+        backToLevelsBtn.addEventListener('click', () => {
+            levelCompleteModal.classList.remove('active');
+            showPage('level');
+        });
+
+        retryLevelBtn.addEventListener('click', () => {
+            levelFailedModal.classList.remove('active');
+            startGame();
+        });
+
+        backToLevelsFailBtn.addEventListener('click', () => {
+            levelFailedModal.classList.remove('active');
+            showPage('level');
+        });
+
+        characterBtn.addEventListener('click', () => {
+            generateCharacterDisplay();
+            characterModal.classList.add('active');
+        });
+
+        closeCharacterModalBtn.addEventListener('click', () => {
+            characterModal.classList.remove('active');
+        });
+
+        // --- CORE FUNCTIONS ---
+        
+        function initializeGame() {
+            const savedProgress = localStorage.getItem('mathFighterProgress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                maxUnlockedLevel = progress.maxUnlockedLevel || { add: 1, subtract: 1, multiply: 1, divide: 1 };
+                levelsCompleted = progress.levelsCompleted || {};
+                totalStars = progress.totalStars || 0;
+                currentPlayerId = progress.currentPlayerId || 'ryu';
+            }
+            for (const op in maxUnlockedLevel) {
+                if (maxUnlockedLevel[op] === undefined) maxUnlockedLevel[op] = 1;
+            }
+            currentLevel = maxUnlockedLevel['add']; 
+            bgMusic.muted = isMuted;
+            muteBtn.textContent = isMuted ? "Unmute 🔇" : "Mute 🔊";
+        }
+        
+        function showPage(pageName) {
+            Object.values(pages).forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+
+            setTimeout(() => {
+                pages[pageName].classList.add('active');
+            }, 50);
+            
+            characterBtn.style.display = (pageName === 'operation') ? 'flex' : 'none';
+
+            if (pageName === 'level') generateLevelMap();
+            else if (pageName === 'game') startGame();
+        }
+        
+        function startGame() {
+            playerHealth = PLAYER_MAX_HEALTH;
+            enemyHealth = ENEMY_BASE_HEALTH + currentLevel;
+            updateHealthBars();
+            
+            const playerChar = characterTiers.find(c => c.id === currentPlayerId);
+            playerSprite.src = playerChar.img;
+            enemySprite.src = enemyOutfits[Math.floor(Math.random() * enemyOutfits.length)];
+
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+            toggleMusic(true);
+            generateProblem();
+        }
+        
+        function generateProblem() {
+            resetFighterAnimations();
+            enableOptions();
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+
+            let num1, num2;
+            const maxNumber = 5 + (currentLevel * 5); 
+            const minNumber = currentLevel > 1 ? Math.floor(maxNumber / 4) + 1 : 1;
+
+            if (operation === 'divide') {
+                num2 = Math.floor(Math.random() * (maxNumber / 3)) + 2;
+                const multiplier = Math.floor(Math.random() * (maxNumber / num2)) + 1;
+                num1 = num2 * multiplier;
+                if (num1 === 0) num1 = num2;
+            } else if (operation === 'subtract') {
+                 num1 = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+                 num2 = Math.floor(Math.random() * (num1 - minNumber + 1)) + minNumber;
+            } else {
+                num1 = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+                num2 = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+            }
+            
+            let symbol;
+            switch(operation) {
+                case 'add': correctAnswer = num1 + num2; symbol = '+'; break;
+                case 'subtract': correctAnswer = num1 - num2; symbol = '−'; break;
+                case 'multiply': correctAnswer = num1 * num2; symbol = '×'; break;
+                case 'divide': correctAnswer = num1 / num2; symbol = '÷'; break;
+            }
+            problemElement.textContent = `${num1} ${symbol} ${num2} = ?`;
+            
+            const options = generateOptions(correctAnswer);
+            optionElements.forEach((option, index) => {
+                option.textContent = options[index];
+            });
+            startTimer();
+        }
+        
+        function generateOptions(correct) {
+            const options = new Set([correct]);
+            while (options.size < 4) {
+                let wrongAnswer;
+                const variationRange = Math.max(5, Math.floor(correct / 5));
+                const plusOrMinus = Math.random() > 0.5 ? 1 : -1;
+                if (Math.random() > 0.3) {
+                    wrongAnswer = correct + (Math.floor(Math.random() * variationRange) + 1) * plusOrMinus;
+                } else {
+                    wrongAnswer = Math.floor(Math.random() * (correct + 20)) + 1;
+                }
+                if (wrongAnswer >= 0 && wrongAnswer !== correct) { 
+                    options.add(wrongAnswer);
+                }
+            }
+            return Array.from(options).sort(() => Math.random() - 0.5);
+        }
+        
+        function checkAnswer(selectedAnswer) {
+            disableOptions();
+            if (selectedAnswer === correctAnswer) {
+                feedbackElement.textContent = 'HIT!';
+                feedbackElement.className = 'feedback correct';
+                enemyHealth--;
+                enemySprite.classList.add('hit');
+                updateHealthBars();
+                if (enemyHealth <= 0) {
+                    setTimeout(completeLevel, 1000);
+                } else {
+                    setTimeout(generateProblem, 1500);
+                }
+            } else {
+                handlePlayerDamage();
+            }
+        }
+
+        function handlePlayerDamage() {
+            feedbackElement.textContent = 'MISS!';
+            feedbackElement.className = 'feedback wrong';
+            playerHealth--;
+            playerSprite.classList.add('hit');
+            updateHealthBars();
+            if (playerHealth <= 0) {
+                setTimeout(failLevel, 1000);
+            } else {
+                setTimeout(generateProblem, 1500);
+            }
+        }
+        
+        function completeLevel() {
+            toggleMusic(false);
+            const levelKey = `${operation}-${currentLevel}`;
+            let prevLevelStatus = levelsCompleted[levelKey];
+            let prevStars = prevLevelStatus ? prevLevelStatus.stars : 0;
+            
+            let currentStars = playerHealth;
+
+            if (currentStars > prevStars) {
+                totalStars += (currentStars - prevStars);
+                levelsCompleted[levelKey] = { passed: true, stars: currentStars };
+            } else if (!prevLevelStatus) {
+                totalStars += currentStars;
+                levelsCompleted[levelKey] = { passed: true, stars: currentStars };
+            }
+            
+            if (currentLevel === maxUnlockedLevel[operation] && currentLevel < 10) { 
+                maxUnlockedLevel[operation]++;
+            }
+            saveProgress();
+            pointsEarnedDisplay.textContent = currentStars;
+            levelCompleteStarsDisplay.innerHTML = '⭐'.repeat(currentStars);
+            levelCompleteModal.classList.add('active');
+            createConfetti();
+        }
+
+        function failLevel() {
+            toggleMusic(false);
+            levelFailedModal.classList.add('active');
+        }
+
+        // --- HELPER & UI FUNCTIONS ---
+
+        function updateHealthBars() {
+            const playerHealthPercent = (playerHealth / PLAYER_MAX_HEALTH) * 100;
+            const enemyHealthPercent = (enemyHealth / (ENEMY_BASE_HEALTH + currentLevel)) * 100;
+            playerHealthBar.style.width = `${playerHealthPercent}%`;
+            enemyHealthBar.style.width = `${enemyHealthPercent}%`;
+        }
+
+        function startTimer() {
+            timer = TIME_PER_QUESTION;
+            timerDisplay.textContent = timer;
+            timerInterval = setInterval(() => {
+                timer--;
+                timerDisplay.textContent = timer;
+                if (timer <= 0) {
+                    stopTimer();
+                    handlePlayerDamage();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function disableOptions() {
+            optionElements.forEach(opt => opt.classList.add('disabled'));
+        }
+        function enableOptions() {
+            optionElements.forEach(opt => opt.classList.remove('disabled'));
+        }
+        function resetFighterAnimations() {
+            playerSprite.classList.remove('hit');
+            enemySprite.classList.remove('hit');
+        }
+
+        function toggleMute() {
+            // First ensure we have audio context
+            if (bgMusic.paused && !isMuted) {
+                bgMusic.play().catch(e => console.log("Audio play failed:", e));
+            }
+            
+            // Toggle the mute state
+            isMuted = !isMuted;
+            bgMusic.muted = isMuted;
+            
+            // Update button text
+            muteBtn.textContent = isMuted ? "Unmute 🔇" : "Mute 🔊";
+            
+            // If unmuting, ensure volume is at a reasonable level
+            if (!isMuted && bgMusic.volume === 0) {
+                bgMusic.volume = 0.5;
+            }
+        }
+
+        function toggleMusic(play) {
+            if (play) {
+                if (isMuted) return; // Don't play if muted
+                bgMusic.play().catch(e => console.log("Audio play failed:", e));
+            } else {
+                bgMusic.pause();
+            }
+        }
+
+        function resumeAudioContext() {
+            if (bgMusic.paused && !isMuted) {
+                bgMusic.play().then(() => {
+                    bgMusic.pause(); // Immediately pause if we just wanted to resume context
+                    bgMusic.currentTime = 0; // Reset to start
+                }).catch(e => console.log("Audio context resume failed:", e));
+            }
+        }
+
+        function saveProgress() {
+            const progress = { maxUnlockedLevel, levelsCompleted, totalStars, currentPlayerId };
+            localStorage.setItem('mathFighterProgress', JSON.stringify(progress));
+        }
+        
+        function createConfetti() {
+            confettiContainer.innerHTML = '';
+            const colors = ['#e94560', '#f9a826', '#84dcc6', '#ffffff'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                if (Math.random() > 0.5) confetti.style.borderRadius = '50%';
+                confettiContainer.appendChild(confetti);
+            }
+            setTimeout(() => { confettiContainer.innerHTML = ''; }, 5000);
+        }
+
+        function generateCharacterDisplay() {
+            characterList.innerHTML = '';
+            characterTiers.forEach(char => {
+                const isUnlocked = totalStars >= char.stars;
+                const charItem = document.createElement('div');
+                charItem.className = 'character-item';
+                if (!isUnlocked) charItem.classList.add('locked');
+                if (char.id === currentPlayerId) charItem.classList.add('current');
+                
+                charItem.innerHTML = `
+                    <img src="${char.img}" alt="${char.name}" class="character-avatar">
+                    <div class="character-info">
+                        <h3>${char.name}</h3>
+                        <p>${isUnlocked ? 'Unlocked' : `Needs ${char.stars} ⭐`}</p>
+                    </div>
+                `;
+
+                if (isUnlocked) {
+                    charItem.addEventListener('click', () => {
+                        currentPlayerId = char.id;
+                        saveProgress();
+                        generateCharacterDisplay();
+                    });
+                }
+                characterList.appendChild(charItem);
+            });
+        }
+
+        function generateLevelMap() {
+            levelsContainer.innerHTML = '';
+            const totalLevels = 10;
+            const pathSvg = document.getElementById('path-svg');
+            pathSvg.setAttribute('viewBox', `0 0 100 ${(totalLevels + 1) * 150}`); 
+            let pathD = "M 50,0 ";
+            for (let i = 0; i < totalLevels; i++) {
+                const y = i * 150;
+                const nextY = (i + 1) * 150;
+                pathD += (i % 2 === 0) ? `C 100,${y + 50} 0,${y + 100} 50,${nextY} ` : `S 100,${y + 100} 50,${nextY} `;
+            }
+            pathD += `L 50,${(totalLevels + 1) * 150}`;
+            pathSvg.querySelector('path').setAttribute('d', pathD);
+            
+            for (let i = 1; i <= totalLevels + 1; i++) {
+                const levelNode = document.createElement('div');
+                levelNode.className = 'level-node';
+                const levelCircle = document.createElement('div');
+                levelCircle.className = 'level-circle';
+                
+                if (i > totalLevels) {
+                    levelCircle.classList.add('final');
+                    levelCircle.textContent = '??';
+                } else {
+                    levelCircle.textContent = i;
+                    const levelKey = `${operation}-${i}`;
+                    const levelStatus = levelsCompleted[levelKey];
+
+                    if (levelStatus && levelStatus.passed) {
+                        levelCircle.classList.add('completed');
+                        const starsDisplay = document.createElement('div');
+                        starsDisplay.classList.add('stars-display');
+                        starsDisplay.textContent = '⭐'.repeat(levelStatus.stars);
+                        levelCircle.appendChild(starsDisplay);
+                    } else if (i <= maxUnlockedLevel[operation]) {
+                        levelCircle.classList.add('unlocked');
+                        if (i === currentLevel) levelCircle.classList.add('current');
+                        
+                        levelCircle.addEventListener('click', function() {
+                            currentLevel = i;
+                            showPage('game');
+                        });
+                    } else {
+                        levelCircle.classList.add('locked');
+                    }
+                }
+                levelNode.appendChild(levelCircle);
+                levelsContainer.appendChild(levelNode);
+            }
+        }
+    });
+    </script>
+</body>
+</html>
